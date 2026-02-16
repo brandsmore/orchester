@@ -33,7 +33,7 @@ The problem: **you can only use one orchestration layer at a time**, and switchi
 
 ```bash
 # Clone and install
-git clone https://github.com/anthropics/orchester.git
+git clone https://github.com/brandsmore/orchester.git
 cd orchester
 npm install
 
@@ -189,4 +189,4 @@ MIT
 
 ---
 
-[한국어](./README.ko.md)
+[한국어](./README.ko.md) · [日本語](./README.ja.md) · [中文](./README.zh.md)

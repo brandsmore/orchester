@@ -33,7 +33,7 @@ Claude Code, Codex CLI, OpenCode 같은 AI 코딩 도구들은 오케스트레�
 
 ```bash
 # 클론 및 설치
-git clone https://github.com/anthropics/orchester.git
+git clone https://github.com/brandsmore/orchester.git
 cd orchester
 npm install
 
@@ -189,4 +189,4 @@ MIT
 
 ---
 
-[English](./README.md)
+[English](./README.md) · [日本語](./README.ja.md) · [中文](./README.zh.md)
