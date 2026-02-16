@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Box, Text, useInput } from 'ink';
 import { StatusMessage } from '@inkjs/ui';
 import { getAllUsage, formatTokens, miniBar } from '../core/usage.js';
-import { theme } from '../core/theme.js';
+import { theme, runtimeIcon } from '../core/theme.js';
 import { Header } from './Header.js';
 import { t } from '../core/i18n.js';
 import type { RuntimeUsage } from '../core/usage.js';
@@ -65,7 +65,7 @@ export function UsageView({ onDone }: UsageViewProps) {
 
 function RuntimeCard({ usage, maxTokens }: { usage: RuntimeUsage; maxTokens: number }) {
   const color = usage.available ? theme.success : theme.muted;
-  const statusIcon = usage.available ? '●' : '○';
+  const statusIcon = usage.available ? runtimeIcon(usage.id) : '○';
 
   return (
     <Box

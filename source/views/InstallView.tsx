@@ -227,13 +227,13 @@ export function InstallView({ onDone }: InstallViewProps) {
                     {'  '}★ {e.stars}{'  '}{e.description}
                   </Text>
                   {isOnSystem && (
-                    <Text color={theme.onSystem} dimColor={!isCurrent}>{'  '}[on system]</Text>
+                    <Text color={theme.onSystem} dimColor={!isCurrent}>{'  '}⚠ on system</Text>
                   )}
                   {isInstalled && !isOnSystem && (
-                    <Text color={theme.installed} dimColor={!isCurrent}>{'  '}[installed]</Text>
+                    <Text color={theme.installed} dimColor={!isCurrent}>{'  '}📦 installed</Text>
                   )}
                   {e.custom && (
-                    <Text color={theme.custom} dimColor={!isCurrent}>{'  '}[custom]</Text>
+                    <Text color={theme.custom} dimColor={!isCurrent}>{'  '}🧩 custom</Text>
                   )}
                 </Box>
               );

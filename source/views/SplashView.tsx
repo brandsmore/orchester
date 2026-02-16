@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
 import { detectRuntimes } from '../core/detector.js';
 import { loadState } from '../core/state.js';
+import { runtimeIcon } from '../core/theme.js';
 import type { DetectedRuntime } from '../core/detector.js';
 
 interface SplashViewProps {
@@ -110,7 +111,7 @@ export function SplashView({ onDone }: SplashViewProps) {
             <Text color="#a3be8c">  ✓ </Text>
             <Text dimColor>
               {installedRuntimes.length > 0
-                ? installedRuntimes.map(r => `${r.id}${r.version ? ` v${r.version}` : ''}`).join(' · ')
+                ? installedRuntimes.map(r => `${runtimeIcon(r.id)} ${r.id}${r.version ? ` v${r.version}` : ''}`).join('  ')
                 : 'No runtimes detected'
               }
             </Text>

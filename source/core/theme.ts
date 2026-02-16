@@ -21,3 +21,50 @@ export const theme = {
   onSystem: '#ebcb8b',    // Yellow — active on system
   custom: '#b48ead',      // Purple — custom entries
 } as const;
+
+// Icons — Unicode symbols for TUI branding
+export const icons = {
+  // Runtimes
+  claude: '⬡',       // hexagon — Anthropic
+  codex: '◈',        // diamond in square — OpenAI
+  gemini: '✦',       // star — Google
+  cursor: '▢',       // square — Cursor
+  antigravity: '◉',  // bullseye
+  opencode: '⬢',     // filled hexagon
+
+  // Tool types
+  agents: '🤖',
+  skills: '⚡',
+  hooks: '🔗',
+  plugins: '🧩',
+  commands: '⌘',
+
+  // Features
+  switch: '⇄',       // profile switching
+  symlink: '🔒',     // safe isolation
+  snapshot: '📸',     // vanilla backup
+  registry: '📦',    // package registry
+  usage: '📊',       // token dashboard
+  detect: '🔍',      // runtime detection
+  diff: '📋',        // change preview
+  lang: '🌐',        // i18n
+
+  // Status
+  active: '●',
+  inactive: '○',
+  installed: '✓',
+  missing: '✗',
+  star: '★',
+  arrow: '→',
+  pointer: '❯',
+} as const;
+
+/** Get runtime icon by id */
+export function runtimeIcon(id: string): string {
+  return (icons as Record<string, string>)[id] ?? '◇';
+}
+
+/** Get tool type icon */
+export function toolIcon(type: string): string {
+  return (icons as Record<string, string>)[type] ?? '◇';
+}

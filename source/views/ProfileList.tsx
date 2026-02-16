@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Box, Text, useApp, useInput } from 'ink';
 import { detectRuntimes, detectExistingTools } from '../core/detector.js';
-import { theme } from '../core/theme.js';
+import { theme, runtimeIcon, toolIcon } from '../core/theme.js';
 import { Header } from './Header.js';
 import { t, getLocale, setLocale, getLocales, getLocaleLabel } from '../core/i18n.js';
 import type { Locale } from '../core/i18n.js';
@@ -157,10 +157,10 @@ export function ProfileList({ profiles, onSelect, onInstall, onUsage }: ProfileL
           <Text dimColor>  {t('help.whatIsDesc3')}</Text>
           <Text> </Text>
           <Text bold>{t('help.concepts')}</Text>
-          <Text dimColor>  <Text color={theme.accent}>Profile</Text>    {t('help.profile')}</Text>
-          <Text dimColor>  <Text color={theme.accent}>Install</Text>    {t('help.install')}</Text>
-          <Text dimColor>  <Text color={theme.accent}>Activate</Text>   {t('help.activate')}</Text>
-          <Text dimColor>  <Text color={theme.accent}>Vanilla</Text>    {t('help.vanilla')}</Text>
+          <Text dimColor>  📦 <Text color={theme.accent}>Profile</Text>    {t('help.profile')}</Text>
+          <Text dimColor>  📥 <Text color={theme.accent}>Install</Text>    {t('help.install')}</Text>
+          <Text dimColor>  ⇄  <Text color={theme.accent}>Activate</Text>   {t('help.activate')}</Text>
+          <Text dimColor>  📸 <Text color={theme.accent}>Vanilla</Text>    {t('help.vanilla')}</Text>
           <Text> </Text>
           <Text bold>{t('help.keybindings')}</Text>
           <Text dimColor>  <Text color={theme.accent}>Enter</Text>   {t('help.keySelect')}</Text>
@@ -207,7 +207,7 @@ export function ProfileList({ profiles, onSelect, onInstall, onUsage }: ProfileL
             <Text key={r.id}>
               {i > 0 ? '  ' : ''}
               <Text color={r.installed ? theme.success : theme.muted}>
-                {r.id} {r.installed ? '✓' : '✗'}
+                {runtimeIcon(r.id)} {r.id} {r.installed ? '✓' : '✗'}
               </Text>
             </Text>
           ))}
@@ -218,7 +218,7 @@ export function ProfileList({ profiles, onSelect, onInstall, onUsage }: ProfileL
             {existingTools.map((tool, i) => (
               <Text key={`${tool.type}-${tool.location}`}>
                 {i > 0 ? '  ' : ''}
-                <Text dimColor>{tool.type}({tool.fileCount})</Text>
+                <Text dimColor>{toolIcon(tool.type)} {tool.type}({tool.fileCount})</Text>
               </Text>
             ))}
           </Box>

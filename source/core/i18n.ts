@@ -20,9 +20,9 @@ const messages: Record<Locale, Record<string, string>> = {
     'header.install': 'Install Profile',
 
     // Header features
-    'header.feat1': '◇ Switch orchestration layers in one keystroke',
-    'header.feat2': '◇ Symlink isolation — no file overwrites',
-    'header.feat3': '◇ Supports Claude, Codex, Gemini, Cursor & more',
+    'header.feat1': '⇄  Switch orchestration layers in one keystroke',
+    'header.feat2': '🔒 Symlink isolation — no file overwrites',
+    'header.feat3': '🔍 Supports Claude, Codex, Gemini, Cursor & more',
 
     // ProfileList
     'list.selectProfile': 'Select a profile:',
@@ -132,9 +132,9 @@ const messages: Record<Locale, Record<string, string>> = {
     'header.switchResult': '전환 결과',
     'header.install': '프로파일 설치',
 
-    'header.feat1': '◇ 한 키로 오케스트레이션 레이어 전환',
-    'header.feat2': '◇ Symlink 격리 — 파일 덮어쓰기 없음',
-    'header.feat3': '◇ Claude, Codex, Gemini, Cursor 등 지원',
+    'header.feat1': '⇄  한 키로 오케스트레이션 레이어 전환',
+    'header.feat2': '🔒 Symlink 격리 — 파일 덮어쓰기 없음',
+    'header.feat3': '🔍 Claude, Codex, Gemini, Cursor 등 지원',
 
     'list.selectProfile': '프로파일을 선택하세요:',
     'list.noneOption': 'none — 바닐라 복원 (오케스트레이션 없음)',
@@ -235,9 +235,9 @@ const messages: Record<Locale, Record<string, string>> = {
     'header.switchResult': '切替結果',
     'header.install': 'プロファイルインストール',
 
-    'header.feat1': '◇ ワンキーでオーケストレーションレイヤーを切替',
-    'header.feat2': '◇ Symlink分離 — ファイル上書きなし',
-    'header.feat3': '◇ Claude, Codex, Gemini, Cursor等に対応',
+    'header.feat1': '⇄  ワンキーでオーケストレーションレイヤーを切替',
+    'header.feat2': '🔒 Symlink分離 — ファイル上書きなし',
+    'header.feat3': '🔍 Claude, Codex, Gemini, Cursor等に対応',
 
     'list.selectProfile': 'プロファイルを選択:',
     'list.noneOption': 'none — バニラに復元（オーケストレーションなし）',
@@ -338,9 +338,9 @@ const messages: Record<Locale, Record<string, string>> = {
     'header.switchResult': '切换结果',
     'header.install': '安装配置文件',
 
-    'header.feat1': '◇ 一键切换编排层',
-    'header.feat2': '◇ Symlink隔离 — 无文件覆盖',
-    'header.feat3': '◇ 支持 Claude, Codex, Gemini, Cursor 等',
+    'header.feat1': '⇄  一键切换编排层',
+    'header.feat2': '🔒 Symlink隔离 — 无文件覆盖',
+    'header.feat3': '🔍 支持 Claude, Codex, Gemini, Cursor 等',
 
     'list.selectProfile': '选择配置文件:',
     'list.noneOption': 'none — 恢复原始状态（无编排）',
