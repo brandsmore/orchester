@@ -1,0 +1,32 @@
+{
+  "name": "orchester",
+  "version": "0.1.0",
+  "description": "Orchestration Profile Manager - AI coding tool orchestration layer switcher",
+  "type": "module",
+  "bin": {
+    "orchester": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx source/cli.tsx",
+    "start": "node dist/cli.js"
+  },
+  "dependencies": {
+    "ink": "^6.0.0",
+    "@inkjs/ui": "^2.0.0",
+    "react": "^19.0.0",
+    "meow": "^13.0.0",
+    "js-yaml": "^4.1.0",
+    "fs-extra": "^11.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "tsx": "^4.19.0",
+    "@types/react": "^19.0.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/js-yaml": "^4.0.9"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

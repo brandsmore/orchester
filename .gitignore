@@ -1,0 +1,8 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+.omx/
+docs/.pdca-snapshots/
+docs/.pdca-status.json
+docs/.bkit-memory.json
