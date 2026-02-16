@@ -120,14 +120,14 @@ Validate → Deactivate old → Activate new → Verify
 
 ## Built-in Registry
 
-| Name | Description | Tool |
-|------|-------------|------|
-| omc | 5 modes, 32 agents, 31+ skills, HUD | Claude Code |
-| ecc | Comprehensive starter kit | Claude Code |
-| bkit | PDCA-based AI native workflow | Claude Code |
-| wshobson-agents | 73 plugins, 112 agents, marketplace | Claude Code |
-| oh-my-opencode | Sisyphus orchestrator, 25+ hooks | OpenCode |
-| claude-orchestra | 40+ agents org chart structure | Claude Code |
+| Name | Stars | Description | Tool |
+|------|-------|-------------|------|
+| omc | 6.4K | 28 agents, 37 skills, Team mode | Claude Code |
+| ecc | 44.7K | 13 agents, 30+ skills, hackathon winner | Claude Code |
+| bkit | 91 | PDCA-based AI native workflow | Claude Code |
+| wshobson-agents | 28.7K | 73 plugins, 112 agents, 146 skills | Claude Code |
+| oh-my-opencode | 31.6K | Sisyphus orchestrator, multi-agent | OpenCode |
+| claude-orchestra | 32 | 47 agents, 10 teams org chart | Claude Code |
 
 You can also add any Git repository as a custom profile with the `a` key.
 
@@ -177,10 +177,14 @@ source/
     └── UsageView.tsx     # Token usage dashboard
 ```
 
+## Known Limitations
+
+- **Plugin-based tools not yet managed** — Orchestration tools installed via Claude Code's `/plugin install` (e.g., bkit, omc) are not automatically deactivated when switching profiles. You must manually run `/plugin uninstall <name>` before using orchester to manage that tool. Plugin lifecycle management is planned for v0.2.
+
 ## Roadmap
 
-- **v0.2** — MCP namespace isolation, per-project profiles
-- **v0.3** — Plugin system, profile composition (mix & match)
+- **v0.2** — Plugin lifecycle management (auto-disable/enable on switch), MCP namespace isolation, per-project profiles
+- **v0.3** — Profile composition (mix & match), profile versioning
 - **v1.0** — Full multi-runtime support, profile marketplace
 
 ## License

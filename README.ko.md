@@ -120,14 +120,14 @@ orchester는 **2단계 모델**을 사용합니다:
 
 ## 내장 레지스트리
 
-| 이름 | 설명 | 대상 도구 |
-|------|------|----------|
-| omc | 5 모드, 32 에이전트, 31+ 스킬, HUD | Claude Code |
-| ecc | 종합 스타터 킷 | Claude Code |
-| bkit | PDCA 기반 AI 네이티브 워크플로우 | Claude Code |
-| wshobson-agents | 73 플러그인, 112 에이전트, 마켓플레이스 | Claude Code |
-| oh-my-opencode | Sisyphus 오케스트레이터, 25+ hooks | OpenCode |
-| claude-orchestra | 40+ 에이전트 조직도 구조 | Claude Code |
+| 이름 | Stars | 설명 | 대상 도구 |
+|------|-------|------|----------|
+| omc | 6.4K | 28 에이전트, 37 스킬, Team 모드 | Claude Code |
+| ecc | 44.7K | 13 에이전트, 30+ 스킬, 해커톤 우승작 | Claude Code |
+| bkit | 91 | PDCA 기반 AI 네이티브 워크플로우 | Claude Code |
+| wshobson-agents | 28.7K | 73 플러그인, 112 에이전트, 146 스킬 | Claude Code |
+| oh-my-opencode | 31.6K | Sisyphus 오케스트레이터, 멀티 에이전트 | OpenCode |
+| claude-orchestra | 32 | 47 에이전트, 10 팀 조직도 구조 | Claude Code |
 
 `a` 키로 모든 Git 저장소를 커스텀 프로파일로 추가할 수도 있습니다.
 
@@ -177,10 +177,14 @@ source/
     └── UsageView.tsx     # 토큰 사용량 대시보드
 ```
 
+## 알려진 제한사항
+
+- **플러그인 기반 도구 미관리** — Claude Code의 `/plugin install`로 설치된 오케스트레이션 도구(예: bkit, omc)는 프로파일 전환 시 자동 비활성화되지 않습니다. orchester로 관리하려면 먼저 `/plugin uninstall <이름>`을 수동 실행해야 합니다. 플러그인 라이프사이클 관리는 v0.2에서 지원 예정입니다.
+
 ## 로드맵
 
-- **v0.2** — MCP 네임스페이스 격리, 프로젝트별 프로파일
-- **v0.3** — 플러그인 시스템, 프로파일 합성 (믹스 & 매치)
+- **v0.2** — 플러그인 라이프사이클 관리 (전환 시 자동 비활성화/활성화), MCP 네임스페이스 격리, 프로젝트별 프로파일
+- **v0.3** — 프로파일 합성 (믹스 & 매치), 프로파일 버저닝
 - **v1.0** — 멀티 런타임 완전 지원, 프로파일 마켓플레이스
 
 ## 라이선스

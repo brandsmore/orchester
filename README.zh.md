@@ -120,14 +120,14 @@ orchester 使用**两阶段模型**：
 
 ## 内置注册表
 
-| 名称 | 描述 | 工具 |
-|------|------|------|
-| omc | 5种模式、32个代理、31+技能、HUD | Claude Code |
-| ecc | 综合入门套件 | Claude Code |
-| bkit | 基于PDCA的AI原生工作流 | Claude Code |
-| wshobson-agents | 73个插件、112个代理、市场 | Claude Code |
-| oh-my-opencode | Sisyphus编排器、25+钩子 | OpenCode |
-| claude-orchestra | 40+代理 组织架构 | Claude Code |
+| 名称 | Stars | 描述 | 工具 |
+|------|-------|------|------|
+| omc | 6.4K | 28个代理、37个技能、Team模式 | Claude Code |
+| ecc | 44.7K | 13个代理、30+技能、黑客松获奖作品 | Claude Code |
+| bkit | 91 | 基于PDCA的AI原生工作流 | Claude Code |
+| wshobson-agents | 28.7K | 73个插件、112个代理、146个技能 | Claude Code |
+| oh-my-opencode | 31.6K | Sisyphus编排器、多代理 | OpenCode |
+| claude-orchestra | 32 | 47个代理、10个团队组织架构 | Claude Code |
 
 按 `a` 键可将任意 Git 仓库添加为自定义配置文件。
 
@@ -177,10 +177,14 @@ source/
     └── UsageView.tsx     # Token 使用量仪表板
 ```
 
+## 已知限制
+
+- **插件方式安装的工具暂不管理** — 通过Claude Code的`/plugin install`安装的编排工具（如bkit、omc）在切换配置文件时不会自动停用。要使用orchester管理，需先手动执行`/plugin uninstall <名称>`。插件生命周期管理计划在v0.2中支持。
+
 ## 路线图
 
-- **v0.2** — MCP 命名空间隔离、项目级配置文件
-- **v0.3** — 插件系统、配置文件组合（混搭）
+- **v0.2** — 插件生命周期管理（切换时自动启用/停用）、MCP命名空间隔离、项目级配置文件
+- **v0.3** — 配置文件组合（混搭）、配置文件版本管理
 - **v1.0** — 完整多运行时支持、配置文件市场
 
 ## 许可证
