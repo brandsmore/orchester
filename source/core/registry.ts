@@ -13,14 +13,14 @@ import type { RegistryEntry } from '../types.js';
 export const REGISTRY: RegistryEntry[] = [
   {
     name: 'omc',
-    description: '5 modes, 32 agents, 31+ skills, HUD',
-    repo: 'https://github.com/anthropics/claude-code-tooling',
+    description: '28 agents, 37 skills, Team mode, multi-agent orchestration',
+    repo: 'https://github.com/Yeachan-Heo/oh-my-claudecode',
     tags: ['agents', 'orchestration', 'multi-mode'],
-    stars: '2.1K',
+    stars: '6.4K',
     profileDir: 'omc',
     manifest: {
       name: 'omc',
-      description: '5 modes, 32 agents, 31+ skills, HUD',
+      description: '28 agents, 37 skills, Team mode, multi-agent orchestration',
       tags: ['agents', 'orchestration', 'multi-mode'],
       tool: 'claude-code',
       links: [
@@ -32,14 +32,14 @@ export const REGISTRY: RegistryEntry[] = [
   },
   {
     name: 'ecc',
-    description: 'agents + skills + hooks + commands comprehensive starter kit',
-    repo: 'https://github.com/anthropics/claude-code-tooling',
+    description: '13 agents, 30+ skills, hooks + commands, hackathon winner',
+    repo: 'https://github.com/affaan-m/everything-claude-code',
     tags: ['starter-kit', 'comprehensive', 'production-ready'],
     stars: '44.7K',
     profileDir: 'ecc',
     manifest: {
       name: 'ecc',
-      description: 'agents + skills + hooks + commands comprehensive starter kit',
+      description: '13 agents, 30+ skills, hooks + commands, hackathon winner',
       tags: ['starter-kit', 'comprehensive', 'production-ready'],
       tool: 'claude-code',
       links: [
@@ -52,9 +52,9 @@ export const REGISTRY: RegistryEntry[] = [
   {
     name: 'bkit',
     description: 'PDCA-based AI native development workflow',
-    repo: 'https://github.com/anthropics/claude-code-tooling',
+    repo: 'https://github.com/popup-studio-ai/bkit-claude-code',
     tags: ['pdca', 'workflow', 'development'],
-    stars: '-',
+    stars: '91',
     profileDir: 'bkit',
     manifest: {
       name: 'bkit',
@@ -70,14 +70,14 @@ export const REGISTRY: RegistryEntry[] = [
   },
   {
     name: 'wshobson-agents',
-    description: '73 plugins, 112 agents, plugin marketplace',
+    description: '73 plugins, 112 agents, 146 skills, plugin marketplace',
     repo: 'https://github.com/wshobson/agents',
     tags: ['plugins', 'marketplace', 'agents'],
     stars: '28.7K',
     profileDir: 'wshobson-agents',
     manifest: {
       name: 'wshobson-agents',
-      description: '73 plugins, 112 agents, plugin marketplace',
+      description: '73 plugins, 112 agents, 146 skills, plugin marketplace',
       tags: ['plugins', 'marketplace', 'agents'],
       tool: 'claude-code',
       links: [
@@ -88,14 +88,14 @@ export const REGISTRY: RegistryEntry[] = [
   },
   {
     name: 'oh-my-opencode',
-    description: 'Sisyphus orchestrator, 25+ hooks, multi-agent workflows',
+    description: 'Sisyphus orchestrator, multi-agent workflows for OpenCode',
     repo: 'https://github.com/code-yeongyu/oh-my-opencode',
     tags: ['opencode', 'orchestration', 'multi-agent'],
-    stars: '-',
+    stars: '31.6K',
     profileDir: 'oh-my-opencode',
     manifest: {
       name: 'oh-my-opencode',
-      description: 'Sisyphus orchestrator, 25+ hooks, multi-agent workflows',
+      description: 'Sisyphus orchestrator, multi-agent workflows for OpenCode',
       tags: ['opencode', 'orchestration', 'multi-agent'],
       tool: 'opencode',
       links: [
@@ -107,14 +107,14 @@ export const REGISTRY: RegistryEntry[] = [
   },
   {
     name: 'claude-orchestra',
-    description: '40+ agents organizational chart structure',
-    repo: 'https://github.com/mgesteban/claude-code-agents-orchestra',
+    description: '47 agents, 10 teams, organizational chart structure',
+    repo: 'https://github.com/0ldh/claude-code-agents-orchestra',
     tags: ['agents', 'org-chart', 'structure'],
-    stars: '37',
+    stars: '32',
     profileDir: 'claude-orchestra',
     manifest: {
       name: 'claude-orchestra',
-      description: '40+ agents organizational chart structure',
+      description: '47 agents, 10 teams, organizational chart structure',
       tags: ['agents', 'org-chart', 'structure'],
       tool: 'claude-code',
       links: [
