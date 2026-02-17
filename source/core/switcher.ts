@@ -4,7 +4,7 @@ import { parseManifest } from './manifest.js';
 import { getActiveProfile, setActiveProfile, getProfilesDir } from './state.js';
 import { restoreVanilla } from './vanilla.js';
 import { createSymlink, removeSymlink, isOrchSymlink } from './linker.js';
-import type { DiffData, DiffItem, SwitchResult, Manifest } from '../types.js';
+import type { DiffData, DiffItem, SwitchResult, Manifest, LinkDef, PluginCommand } from '../types.js';
 
 /** Expand $HOME and $PROJECT variables in paths */
 function expandVars(p: string): string {
@@ -37,6 +37,9 @@ export function buildDiffPreview(from: string | null, to: string | null): DiffDa
           type: 'remove',
           source: link.source,
           target: link.target,
+          installType: link.installType,
+          pluginCommand: link.pluginCommand,
+          pluginLabel: link.pluginLabel,
         });
       }
     } catch {
@@ -53,6 +56,9 @@ export function buildDiffPreview(from: string | null, to: string | null): DiffDa
           type: 'add',
           source: link.source,
           target: link.target,
+          installType: link.installType,
+          pluginCommand: link.pluginCommand,
+          pluginLabel: link.pluginLabel,
         });
       }
     } catch {
@@ -67,6 +73,9 @@ export function buildDiffPreview(from: string | null, to: string | null): DiffDa
 export function switchProfile(from: string | null, to: string | null): SwitchResult {
   let linksRemoved = 0;
   let linksCreated = 0;
+  const createdLinks: LinkDef[] = [];
+  const removedLinks: LinkDef[] = [];
+  const pluginCommands: PluginCommand[] = [];
 
   try {
     // Phase 1: Validate
@@ -79,10 +88,23 @@ export function switchProfile(from: string | null, to: string | null): SwitchRes
       try {
         const fromManifest = loadProfileManifest(from);
         for (const link of fromManifest.links) {
+          if (link.installType === 'plugin') {
+            // Plugin links: collect uninstall command, skip symlink removal
+            if (link.pluginCommand) {
+              pluginCommands.push({
+                command: link.pluginCommand.replace(/install/i, 'uninstall'),
+                label: link.pluginLabel ?? link.source,
+                action: 'uninstall',
+              });
+            }
+            removedLinks.push({ source: link.source, target: link.target, installType: 'plugin', pluginCommand: link.pluginCommand, pluginLabel: link.pluginLabel });
+            continue;
+          }
           const target = expandVars(link.target);
           if (isOrchSymlink(target)) {
             removeSymlink(target);
             linksRemoved++;
+            removedLinks.push({ source: link.source, target: link.target });
           }
         }
       } catch {
@@ -94,10 +116,23 @@ export function switchProfile(from: string | null, to: string | null): SwitchRes
     if (to) {
       const toManifest = loadProfileManifest(to);
       for (const link of toManifest.links) {
+        if (link.installType === 'plugin') {
+          // Plugin links: collect install command, skip symlink creation
+          if (link.pluginCommand) {
+            pluginCommands.push({
+              command: link.pluginCommand,
+              label: link.pluginLabel ?? link.source,
+              action: 'install',
+            });
+          }
+          createdLinks.push({ source: link.source, target: link.target, installType: 'plugin', pluginCommand: link.pluginCommand, pluginLabel: link.pluginLabel });
+          continue;
+        }
         const absoluteSource = resolveSource(to, link.source);
         const target = expandVars(link.target);
         createSymlink(absoluteSource, target);
         linksCreated++;
+        createdLinks.push({ source: link.source, target: link.target });
       }
       setActiveProfile(to);
     } else {
@@ -107,7 +142,14 @@ export function switchProfile(from: string | null, to: string | null): SwitchRes
     }
 
     // Phase 4: Verify (basic check)
-    return { success: true, linksCreated, linksRemoved };
+    return {
+      success: true,
+      linksCreated,
+      linksRemoved,
+      createdLinks,
+      removedLinks,
+      ...(pluginCommands.length > 0 ? { pluginCommands } : {}),
+    };
   } catch (err) {
     // Rollback: restore vanilla on failure
     try {

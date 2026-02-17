@@ -16,6 +16,7 @@ export const REGISTRY: RegistryEntry[] = [
     description: '28 agents, 37 skills, Team mode, multi-agent orchestration',
     repo: 'https://github.com/Yeachan-Heo/oh-my-claudecode',
     tags: ['agents', 'orchestration', 'multi-mode'],
+    focus: ['Fullstack', 'Multi-agent', 'Swarm', 'Autopilot'],
     stars: '6.4K',
     profileDir: 'omc',
     manifest: {
@@ -35,6 +36,7 @@ export const REGISTRY: RegistryEntry[] = [
     description: '13 agents, 30+ skills, hooks + commands, hackathon winner',
     repo: 'https://github.com/affaan-m/everything-claude-code',
     tags: ['starter-kit', 'comprehensive', 'production-ready'],
+    focus: ['Backend', 'DB', 'TDD', 'Security', 'Django', 'Spring', 'Go'],
     stars: '44.7K',
     profileDir: 'ecc',
     manifest: {
@@ -54,6 +56,7 @@ export const REGISTRY: RegistryEntry[] = [
     description: 'PDCA-based AI native development workflow',
     repo: 'https://github.com/popup-studio-ai/bkit-claude-code',
     tags: ['pdca', 'workflow', 'development'],
+    focus: ['Pipeline', '9-Phase', 'Enterprise', 'Mobile', 'Desktop'],
     stars: '91',
     profileDir: 'bkit',
     manifest: {
@@ -73,6 +76,7 @@ export const REGISTRY: RegistryEntry[] = [
     description: '73 plugins, 112 agents, 146 skills, plugin marketplace',
     repo: 'https://github.com/wshobson/agents',
     tags: ['plugins', 'marketplace', 'agents'],
+    focus: ['Plugin', 'Cloud', 'Blockchain', 'IoT', 'AI/ML'],
     stars: '28.7K',
     profileDir: 'wshobson-agents',
     manifest: {
@@ -91,6 +95,7 @@ export const REGISTRY: RegistryEntry[] = [
     description: 'Sisyphus orchestrator, multi-agent workflows for OpenCode',
     repo: 'https://github.com/code-yeongyu/oh-my-opencode',
     tags: ['opencode', 'orchestration', 'multi-agent'],
+    focus: ['OpenCode', 'Orchestration', 'Mythical Agents'],
     stars: '31.6K',
     profileDir: 'oh-my-opencode',
     manifest: {
@@ -110,6 +115,7 @@ export const REGISTRY: RegistryEntry[] = [
     description: '47 agents, 10 teams, organizational chart structure',
     repo: 'https://github.com/0ldh/claude-code-agents-orchestra',
     tags: ['agents', 'org-chart', 'structure'],
+    focus: ['Org-chart', 'QA', 'Architecture', 'DevOps', 'i18n'],
     stars: '32',
     profileDir: 'claude-orchestra',
     manifest: {
@@ -119,6 +125,36 @@ export const REGISTRY: RegistryEntry[] = [
       tool: 'claude-code',
       links: [
         { source: 'files/agents/', target: '$HOME/.claude/agents/' },
+      ],
+    },
+  },
+  {
+    name: 'superpowers',
+    description: 'Agentic skills framework, TDD workflow, multi-tool support',
+    repo: 'https://github.com/obra/superpowers',
+    tags: ['skills', 'tdd', 'workflow', 'multi-tool'],
+    focus: ['TDD', 'Design', 'Planning', 'Code Review', 'Cursor'],
+    stars: '53.5K',
+    profileDir: 'superpowers',
+    installType: 'hybrid',
+    manifest: {
+      name: 'superpowers',
+      description: 'Agentic skills framework, TDD workflow, multi-tool support',
+      tags: ['skills', 'tdd', 'workflow', 'multi-tool'],
+      tool: 'claude-code',
+      installType: 'hybrid',
+      links: [
+        { source: 'files/agents/', target: '$HOME/.claude/agents/' },
+        { source: 'files/skills/', target: '$HOME/.claude/skills/' },
+        { source: 'files/hooks/', target: '$HOME/.claude/hooks/' },
+        { source: 'files/commands/', target: '$HOME/.claude/commands/' },
+        {
+          source: 'superpowers-plugin',
+          target: '$HOME/.claude/plugins/superpowers',
+          installType: 'plugin',
+          pluginCommand: '/plugin install obra/superpowers',
+          pluginLabel: 'Superpowers Plugin',
+        },
       ],
     },
   },
@@ -253,14 +289,19 @@ export async function installProfile(
       }
     }
 
-    // Step 4: Write manifest.yaml
+    // Step 4: Merge plugin links from registry manifest
+    const pluginLinks = entry.manifest.links.filter(l => l.installType === 'plugin');
+    const finalLinks = links.length > 0 ? [...links, ...pluginLinks] : entry.manifest.links;
+
+    // Step 5: Write manifest.yaml
     onProgress(`Writing manifest...`);
-    const manifestData = {
+    const manifestData: Record<string, unknown> = {
       name: entry.manifest.name,
       description: entry.manifest.description,
       tags: entry.manifest.tags,
       tool: entry.manifest.tool,
-      links: links.length > 0 ? links : entry.manifest.links,
+      links: finalLinks,
+      ...(entry.manifest.installType ? { installType: entry.manifest.installType } : {}),
     };
     fs.writeFileSync(
       path.join(profileDir, 'manifest.yaml'),

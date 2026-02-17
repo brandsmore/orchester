@@ -49,6 +49,10 @@ export const icons = {
   diff: '📋',        // change preview
   lang: '🌐',        // i18n
 
+  // Install types
+  plugin: '🔌',     // plugin-type
+  hybrid: '🔀',     // hybrid install
+
   // Status
   active: '●',
   inactive: '○',

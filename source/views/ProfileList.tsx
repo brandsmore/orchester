@@ -5,7 +5,7 @@ import { theme, runtimeIcon, toolIcon } from '../core/theme.js';
 import { Header } from './Header.js';
 import { t, getLocale, setLocale, getLocales, getLocaleLabel } from '../core/i18n.js';
 import type { Locale } from '../core/i18n.js';
-import type { ProfileListItem } from '../types.js';
+import type { ProfileListItem, InstallType } from '../types.js';
 
 interface ProfileListProps {
   profiles: ProfileListItem[];
@@ -24,21 +24,32 @@ export function ProfileList({ profiles, onSelect, onInstall, onUsage }: ProfileL
   const runtimes = useMemo(() => detectRuntimes(), []);
   const existingTools = useMemo(() => detectExistingTools(), []);
 
+  // Install type icon helper
+  const installTypeIcon = (type?: InstallType): string => {
+    if (type === 'hybrid') return ' 🔀';
+    if (type === 'plugin') return ' 🔌';
+    return '';
+  };
+
   // Profile options + none option
   const options = useMemo(() => [
     ...profiles.map(p => ({
       label: p.name,
       description: p.description,
       tags: p.tags,
+      focus: p.focus,
       active: p.active,
       value: p.name,
+      installType: p.installType,
     })),
     {
       label: 'none',
       description: t('list.noneOption'),
       tags: [] as string[],
+      focus: undefined as string[] | undefined,
       active: !profiles.some(p => p.active),
       value: '__none__',
+      installType: undefined as InstallType | undefined,
     },
   ], [profiles]);
 
@@ -263,35 +274,35 @@ export function ProfileList({ profiles, onSelect, onInstall, onUsage }: ProfileL
               const isActive = opt.active;
               const isNone = opt.value === '__none__';
               const pointer = isCurrent ? '❯' : ' ';
-              const marker = isActive ? '●' : '○';
 
               return (
                 <Box key={opt.value}>
                   <Text color={isCurrent ? theme.brand : undefined}>
                     {pointer}{' '}
                   </Text>
-                  <Text color={isActive ? theme.success : undefined} bold={isActive}>
-                    {marker}
-                  </Text>
+                  {isActive ? (
+                    <Text color={theme.success} bold backgroundColor="#2e3440"> ✔ ACTIVE </Text>
+                  ) : (
+                    <Text color={theme.muted}>{'○'}</Text>
+                  )}
                   <Text>{' '}</Text>
                   <Text color={isCurrent ? 'white' : undefined} bold={isCurrent || isActive} dimColor={!isCurrent && !isActive}>
-                    {opt.label}
+                    {opt.label}{installTypeIcon(opt.installType)}
                   </Text>
-                  {opt.description && !isNone && (
+                  {opt.description && (
                     <Text dimColor={!isCurrent}>
                       {'  '}{opt.description}
                     </Text>
                   )}
-                  {isNone && (
+                  {opt.focus && opt.focus.length > 0 ? (
                     <Text dimColor={!isCurrent}>
-                      {'  '}{opt.description}
+                      {'  '}<Text color={theme.info}>{opt.focus.join(' · ')}</Text>
                     </Text>
-                  )}
-                  {opt.tags.length > 0 && (
+                  ) : opt.tags.length > 0 ? (
                     <Text dimColor={!isCurrent}>
                       {'  '}[{opt.tags.join(', ')}]
                     </Text>
-                  )}
+                  ) : null}
                 </Box>
               );
             })}

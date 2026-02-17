@@ -3,7 +3,17 @@ import { loadState, getProfilesDir } from '../core/state.js';
 import { parseManifest, listProfileDirs } from '../core/manifest.js';
 import { hasVanilla } from '../core/vanilla.js';
 import { buildDiffPreview, switchProfile } from '../core/switcher.js';
-import type { AppView, ProfileListItem, DiffData, SwitchResult } from '../types.js';
+import { getRegistryWithStatus } from '../core/registry.js';
+import type { AppView, ProfileListItem, DiffData, SwitchResult, InstallType } from '../types.js';
+
+/** Infer install type from manifest links */
+function inferInstallType(manifest: { links: Array<{ installType?: string }> }): InstallType {
+  const hasPlugin = manifest.links.some(l => l.installType === 'plugin');
+  const hasSymlink = manifest.links.some(l => (l.installType ?? 'symlink') === 'symlink');
+  if (hasPlugin && hasSymlink) return 'hybrid';
+  if (hasPlugin) return 'plugin';
+  return 'symlink';
+}
 
 export function useOrch() {
   const [view, setView] = useState<AppView>('splash');
@@ -21,15 +31,22 @@ export function useOrch() {
     const profilesDir = getProfilesDir();
     const dirs = listProfileDirs(profilesDir);
 
-    const items: ProfileListItem[] = dirs.map(dir => {
+    const registry = getRegistryWithStatus();
+
+    const items = dirs.map(dir => {
       try {
         const manifest = parseManifest(dir);
-        return {
+        const registryEntry = registry.find(r => r.name === manifest.name);
+        const installType = manifest.installType ?? registryEntry?.installType ?? inferInstallType(manifest);
+        const item: ProfileListItem = {
           name: manifest.name,
           description: manifest.description,
           tags: manifest.tags,
+          focus: registryEntry?.focus,
           active: manifest.name === state.activeProfile,
+          ...(installType !== 'symlink' ? { installType } : {}),
         };
+        return item;
       } catch {
         return null;
       }

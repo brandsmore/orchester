@@ -13,8 +13,8 @@ function expandPath(p: string): string {
 
 /** Create a symlink from source to target */
 export function createSymlink(source: string, target: string): void {
-  const expandedSource = expandPath(source);
-  const expandedTarget = expandPath(target);
+  const expandedSource = expandPath(source).replace(/\/+$/, '');
+  const expandedTarget = expandPath(target).replace(/\/+$/, '');
 
   if (!fs.existsSync(expandedSource)) {
     throw new Error(`Source does not exist: ${expandedSource}`);
@@ -38,7 +38,7 @@ export function createSymlink(source: string, target: string): void {
 
 /** Remove a symlink (only if it is a symlink) */
 export function removeSymlink(target: string): void {
-  const expandedTarget = expandPath(target);
+  const expandedTarget = expandPath(target).replace(/\/+$/, '');
 
   try {
     const lstat = fs.lstatSync(expandedTarget);
@@ -52,7 +52,7 @@ export function removeSymlink(target: string): void {
 
 /** Check if a path is a symlink created by orchester */
 export function isOrchSymlink(target: string): boolean {
-  const expandedTarget = expandPath(target);
+  const expandedTarget = expandPath(target).replace(/\/+$/, '');
 
   try {
     const lstat = fs.lstatSync(expandedTarget);
@@ -71,7 +71,7 @@ export function listActiveLinks(targets: string[]): Link[] {
   const links: Link[] = [];
 
   for (const target of targets) {
-    const expandedTarget = expandPath(target);
+    const expandedTarget = expandPath(target).replace(/\/+$/, '');
     try {
       const lstat = fs.lstatSync(expandedTarget);
       if (lstat.isSymbolicLink()) {

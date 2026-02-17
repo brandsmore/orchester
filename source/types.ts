@@ -1,5 +1,15 @@
 // orchester v0.1 — Type definitions
 
+/** Install type for links and profiles */
+export type InstallType = 'symlink' | 'plugin' | 'hybrid';
+
+/** Plugin command for manual execution */
+export interface PluginCommand {
+  command: string;
+  label: string;
+  action: 'install' | 'uninstall';
+}
+
 /** Persisted state in ~/.orchester/state.json */
 export interface State {
   activeProfile: string | null;
@@ -16,6 +26,9 @@ export interface Link {
 export interface LinkDef {
   source: string;
   target: string;
+  installType?: 'symlink' | 'plugin';
+  pluginCommand?: string;
+  pluginLabel?: string;
 }
 
 /** Parsed manifest.yaml for a profile */
@@ -25,6 +38,7 @@ export interface Manifest {
   tags: string[];
   tool: string;
   links: LinkDef[];
+  installType?: InstallType;
 }
 
 /** Diff item for preview */
@@ -32,6 +46,9 @@ export interface DiffItem {
   type: 'add' | 'remove';
   source: string;
   target: string;
+  installType?: 'symlink' | 'plugin';
+  pluginCommand?: string;
+  pluginLabel?: string;
 }
 
 /** Diff data for preview view */
@@ -46,7 +63,9 @@ export interface ProfileListItem {
   name: string;
   description: string;
   tags: string[];
+  focus?: string[];
   active: boolean;
+  installType?: InstallType;
 }
 
 /** Switch result */
@@ -54,6 +73,9 @@ export interface SwitchResult {
   success: boolean;
   linksCreated: number;
   linksRemoved: number;
+  createdLinks?: LinkDef[];
+  removedLinks?: LinkDef[];
+  pluginCommands?: PluginCommand[];
   error?: string;
 }
 
@@ -63,8 +85,10 @@ export interface RegistryEntry {
   description: string;
   repo: string;
   tags: string[];
+  focus?: string[];
   stars: string;
   profileDir: string;
+  installType?: InstallType;
   manifest: Omit<Manifest, 'name' | 'description' | 'tags'> & {
     name: string;
     description: string;

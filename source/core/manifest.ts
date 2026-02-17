@@ -25,16 +25,21 @@ export function parseManifest(profileDir: string): Manifest {
   const tags = Array.isArray(data['tags']) ? data['tags'].map(String) : [];
   const tool = String(data['tool'] ?? 'claude-code');
 
+  const installType = typeof data['installType'] === 'string' ? data['installType'] as Manifest['installType'] : undefined;
+
   const rawLinks = Array.isArray(data['links']) ? data['links'] : [];
   const links = rawLinks.map((l: unknown) => {
     const link = l as Record<string, string>;
     return {
       source: String(link['source'] ?? ''),
       target: String(link['target'] ?? ''),
+      ...(link['installType'] ? { installType: link['installType'] as 'symlink' | 'plugin' } : {}),
+      ...(link['pluginCommand'] ? { pluginCommand: String(link['pluginCommand']) } : {}),
+      ...(link['pluginLabel'] ? { pluginLabel: String(link['pluginLabel']) } : {}),
     };
   }).filter(l => l.source && l.target);
 
-  return { name, description, tags, tool, links };
+  return { name, description, tags, tool, links, ...(installType ? { installType } : {}) };
 }
 
 /**

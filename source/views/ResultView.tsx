@@ -39,6 +39,52 @@ export function ResultView({ result, profileName, onDone }: ResultViewProps) {
               <Text dimColor>{t('result.linksCreated')} {result.linksCreated}</Text>
               <Text dimColor>{t('result.linksRemoved')} {result.linksRemoved}</Text>
             </Box>
+            {result.createdLinks && result.createdLinks.filter(l => l.installType !== 'plugin').length > 0 && (
+              <Box flexDirection="column" marginTop={1} paddingLeft={2}>
+                {result.createdLinks.filter(l => l.installType !== 'plugin').map((link, i) => (
+                  <Text key={i} dimColor>
+                    <Text color={theme.success}>+ </Text>
+                    <Text>{link.source}</Text>
+                    <Text dimColor> → </Text>
+                    <Text>{link.target}</Text>
+                  </Text>
+                ))}
+              </Box>
+            )}
+            {result.removedLinks && result.removedLinks.filter(l => l.installType !== 'plugin').length > 0 && (
+              <Box flexDirection="column" marginTop={1} paddingLeft={2}>
+                {result.removedLinks.filter(l => l.installType !== 'plugin').map((link, i) => (
+                  <Text key={i} dimColor>
+                    <Text color={theme.error}>- </Text>
+                    <Text>{link.target}</Text>
+                  </Text>
+                ))}
+              </Box>
+            )}
+            {result.pluginCommands && result.pluginCommands.length > 0 && (
+              <Box
+                borderStyle="single"
+                borderColor={theme.info}
+                flexDirection="column"
+                paddingX={2}
+                paddingY={0}
+                marginTop={1}
+              >
+                <Text bold color={theme.info}>{'🔌 Plugin Commands (run in Claude Code)'}</Text>
+                {result.pluginCommands.filter(c => c.action === 'install').map((cmd, i) => (
+                  <Box key={`pi-${i}`} flexDirection="column" paddingLeft={2}>
+                    <Text color={theme.success}>{'+ '}{cmd.label}</Text>
+                    <Text dimColor>{'  $ '}{cmd.command}</Text>
+                  </Box>
+                ))}
+                {result.pluginCommands.filter(c => c.action === 'uninstall').map((cmd, i) => (
+                  <Box key={`pu-${i}`} flexDirection="column" paddingLeft={2}>
+                    <Text color={theme.error}>{'- '}{cmd.label}</Text>
+                    <Text dimColor>{'  $ '}{cmd.command}</Text>
+                  </Box>
+                ))}
+              </Box>
+            )}
           </Box>
         ) : (
           <Box flexDirection="column" width="100%">

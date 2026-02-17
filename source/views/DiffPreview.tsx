@@ -25,6 +25,11 @@ export function DiffPreview({ diffData, onConfirm, onCancel }: DiffPreviewProps)
   const removeItems = diffData.items.filter(i => i.type === 'remove');
   const addItems = diffData.items.filter(i => i.type === 'add');
 
+  const symlinkRemove = removeItems.filter(i => (i.installType ?? 'symlink') === 'symlink');
+  const pluginRemove = removeItems.filter(i => i.installType === 'plugin');
+  const symlinkAdd = addItems.filter(i => (i.installType ?? 'symlink') === 'symlink');
+  const pluginAdd = addItems.filter(i => i.installType === 'plugin');
+
   return (
     <Box flexDirection="column" padding={1} width="100%">
       <Header subtitle={t('header.switchPreview')} />
@@ -44,10 +49,10 @@ export function DiffPreview({ diffData, onConfirm, onCancel }: DiffPreviewProps)
         marginTop={1}
         width="100%"
       >
-        {removeItems.length > 0 && (
+        {symlinkRemove.length > 0 && (
           <Box flexDirection="column">
             <Text bold color={theme.error}>{t('diff.remove')}</Text>
-            {removeItems.map((item, i) => (
+            {symlinkRemove.map((item, i) => (
               <Text key={`rm-${i}`} color={theme.error}>
                 {'  ✗ '}{item.target}
               </Text>
@@ -55,12 +60,28 @@ export function DiffPreview({ diffData, onConfirm, onCancel }: DiffPreviewProps)
           </Box>
         )}
 
-        {addItems.length > 0 && (
-          <Box flexDirection="column" marginTop={removeItems.length > 0 ? 1 : 0}>
+        {symlinkAdd.length > 0 && (
+          <Box flexDirection="column" marginTop={symlinkRemove.length > 0 ? 1 : 0}>
             <Text bold color={theme.success}>{t('diff.apply')}</Text>
-            {addItems.map((item, i) => (
+            {symlinkAdd.map((item, i) => (
               <Text key={`add-${i}`} color={theme.success}>
                 {'  ✓ '}{item.target} ← {item.source}
+              </Text>
+            ))}
+          </Box>
+        )}
+
+        {(pluginRemove.length > 0 || pluginAdd.length > 0) && (
+          <Box flexDirection="column" marginTop={symlinkRemove.length > 0 || symlinkAdd.length > 0 ? 1 : 0}>
+            <Text bold color={theme.info}>{'🔌 Plugin Commands (manual)'}</Text>
+            {pluginRemove.map((item, i) => (
+              <Text key={`prm-${i}`} color={theme.error}>
+                {'  ✗ '}{item.pluginLabel ?? item.source}{item.pluginCommand ? ` — ${item.pluginCommand}` : ''}
+              </Text>
+            ))}
+            {pluginAdd.map((item, i) => (
+              <Text key={`padd-${i}`} color={theme.success}>
+                {'  ✓ '}{item.pluginLabel ?? item.source}{item.pluginCommand ? ` — ${item.pluginCommand}` : ''}
               </Text>
             ))}
           </Box>
