@@ -1,4 +1,4 @@
-// orchester v0.1 — Type definitions
+// agent orchester v0.2 — Type definitions
 
 /** Install type for links and profiles */
 export type InstallType = 'symlink' | 'plugin' | 'hybrid';

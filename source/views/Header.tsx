@@ -32,8 +32,8 @@ export function Header({ subtitle, version, features }: HeaderProps) {
     >
       <Box>
         <Text color={theme.brand}>{FRAMES[frame]} </Text>
-        <Text bold color={theme.brand}>orchester</Text>
-        {version && <Text dimColor> v0.1</Text>}
+        <Text bold color={theme.brand}>agent orchester</Text>
+        {version && <Text dimColor> v0.2</Text>}
       </Box>
       {subtitle && <Text dimColor>{subtitle}</Text>}
       {features && features.length > 0 && (

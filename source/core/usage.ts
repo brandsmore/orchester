@@ -1,4 +1,4 @@
-// orchester — Runtime usage data aggregator
+// agent orchester — Runtime usage data aggregator
 // Reads local usage data from Claude Code, Codex CLI, etc.
 
 import fs from 'fs-extra';

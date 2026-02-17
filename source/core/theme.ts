@@ -1,4 +1,4 @@
-// orchester — Nord-inspired purple theme
+// agent orchester — Nord-inspired purple theme
 // Consistent color palette across all views
 
 export const theme = {

@@ -77,8 +77,8 @@ export function SplashView({ onDone }: SplashViewProps) {
 
         <Box flexDirection="column" marginLeft={1} justifyContent="center">
           <Box>
-            <Text bold color="#b48ead">orchester</Text>
-            <Text dimColor> v0.1.0</Text>
+            <Text bold color="#b48ead">agent orchester</Text>
+            <Text dimColor> v0.2.0</Text>
           </Box>
           <Text dimColor>Orchestration Profile Manager</Text>
           {activeProfile ? (

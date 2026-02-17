@@ -1,10 +1,10 @@
 {
-  "name": "orchester",
-  "version": "0.1.0",
-  "description": "Orchestration Profile Manager - AI coding tool orchestration layer switcher",
+  "name": "agent-orchester",
+  "version": "0.2.0",
+  "description": "Agent Orchester - AI coding tool orchestration profile manager",
   "type": "module",
   "bin": {
-    "orchester": "./dist/cli.js"
+    "agent-orchester": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc",

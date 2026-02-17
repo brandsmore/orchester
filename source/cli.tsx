@@ -11,7 +11,7 @@ initLocale();
 const cli = meow(
   `
   Usage
-    $ orchester
+    $ agent-orchester
 
   Options
     --help     Show help
