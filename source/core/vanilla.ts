@@ -3,15 +3,25 @@ import path from 'node:path';
 import os from 'node:os';
 import { getVanillaDir } from './state.js';
 
-/** Claude Code config paths to detect & snapshot */
+/** Config paths to detect & snapshot (multi-tool) */
 function getDetectionPaths(): Array<{ source: string; label: string }> {
   const home = os.homedir();
   const cwd = process.cwd();
 
   return [
+    // Claude Code
     { source: path.join(home, '.claude', 'agents'), label: '~/.claude/agents/' },
     { source: path.join(home, '.claude', 'skills'), label: '~/.claude/skills/' },
     { source: path.join(home, '.claude', 'hooks'), label: '~/.claude/hooks/' },
+    // Codex CLI
+    { source: path.join(home, '.codex', 'agents'), label: '~/.codex/agents/' },
+    // Gemini CLI
+    { source: path.join(home, '.gemini', 'agents'), label: '~/.gemini/agents/' },
+    // Cursor
+    { source: path.join(home, '.cursor', 'agents'), label: '~/.cursor/agents/' },
+    // OpenCode
+    { source: path.join(home, '.config', 'opencode', 'agents'), label: '~/.config/opencode/agents/' },
+    // Project
     { source: path.join(cwd, 'CLAUDE.md'), label: '$PROJECT/CLAUDE.md' },
   ];
 }

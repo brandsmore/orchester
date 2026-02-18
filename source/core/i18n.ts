@@ -48,6 +48,7 @@ const messages: Record<Locale, Record<string, string>> = {
     'help.keySelect': 'Select / Confirm',
     'help.keyNavigate': 'Navigate list',
     'help.keyInstall': 'Install from registry',
+    'help.keyDetail': 'Profile detail',
     'help.keyHelp': 'Toggle this help',
     'help.keyUsage': 'Runtime usage',
     'help.keyLang': 'Change language',
@@ -56,6 +57,7 @@ const messages: Record<Locale, Record<string, string>> = {
 
     // Footer
     'footer.select': 'select',
+    'footer.detail': 'detail',
     'footer.install': 'install',
     'footer.usage': 'usage',
     'footer.help': 'help',
@@ -66,15 +68,33 @@ const messages: Record<Locale, Record<string, string>> = {
     'footer.continue': 'to continue',
     'footer.backToList': 'back to profile list',
 
+    // Detail overlay
+    'detail.title': 'Profile Detail',
+    'detail.runtime': 'Runtime:',
+    'detail.installType': 'Install:',
+    'detail.repo': 'Repo:',
+    'detail.tags': 'Tags:',
+    'detail.focus': 'Focus:',
+    'detail.links': 'Links:',
+    'detail.noLinks': 'No links defined.',
+
     // InitView
     'init.detected': 'Detected Claude Code configs:',
     'init.detecting': 'Detecting configs...',
     'init.snapshotting': 'Creating vanilla snapshot...',
     'init.done': 'Vanilla snapshot saved to ~/.orchester/vanilla/',
 
+    // ToolSelect
+    'toolSelect.title': 'Select Target Tools',
+    'toolSelect.default': 'default',
+    'toolSelect.notInstalled': '(not installed)',
+    'toolSelect.hint': 'toggle',
+    'toolSelect.minOne': 'Select at least one tool.',
+
     // DiffPreview
     'diff.remove': 'Remove:',
     'diff.apply': 'Apply:',
+    'diff.targets': 'Targets:',
     'diff.noChanges': 'No changes to apply.',
 
     // ResultView
@@ -158,6 +178,7 @@ const messages: Record<Locale, Record<string, string>> = {
     'help.keySelect': '선택 / 확인',
     'help.keyNavigate': '목록 탐색',
     'help.keyInstall': '레지스트리에서 설치',
+    'help.keyDetail': '프로파일 상세',
     'help.keyHelp': '도움말 토글',
     'help.keyUsage': '사용량 보기',
     'help.keyLang': '언어 변경',
@@ -165,6 +186,7 @@ const messages: Record<Locale, Record<string, string>> = {
     'help.pressClose': '아무 키나 누르면 닫힙니다',
 
     'footer.select': '선택',
+    'footer.detail': '상세',
     'footer.install': '설치',
     'footer.usage': '사용량',
     'footer.help': '도움말',
@@ -175,13 +197,29 @@ const messages: Record<Locale, Record<string, string>> = {
     'footer.continue': '계속',
     'footer.backToList': '프로파일 목록으로',
 
+    'detail.title': '프로파일 상세',
+    'detail.runtime': '런타임:',
+    'detail.installType': '설치:',
+    'detail.repo': '저장소:',
+    'detail.tags': '태그:',
+    'detail.focus': '포커스:',
+    'detail.links': '링크:',
+    'detail.noLinks': '정의된 링크가 없습니다.',
+
     'init.detected': '감지된 Claude Code 설정:',
     'init.detecting': '설정 감지 중...',
     'init.snapshotting': '바닐라 스냅샷 생성 중...',
     'init.done': '바닐라 스냅샷이 ~/.orchester/vanilla/에 저장되었습니다.',
 
+    'toolSelect.title': '대상 도구 선택',
+    'toolSelect.default': '기본',
+    'toolSelect.notInstalled': '(미설치)',
+    'toolSelect.hint': '토글',
+    'toolSelect.minOne': '최소 1개의 도구를 선택하세요.',
+
     'diff.remove': '제거:',
     'diff.apply': '적용:',
+    'diff.targets': '대상:',
     'diff.noChanges': '적용할 변경사항이 없습니다.',
 
     'result.success': '전환 성공',
@@ -261,6 +299,7 @@ const messages: Record<Locale, Record<string, string>> = {
     'help.keySelect': '選択 / 確認',
     'help.keyNavigate': 'リスト移動',
     'help.keyInstall': 'レジストリからインストール',
+    'help.keyDetail': 'プロファイル詳細',
     'help.keyHelp': 'ヘルプ切替',
     'help.keyUsage': '使用量を表示',
     'help.keyLang': '言語変更',
@@ -268,6 +307,7 @@ const messages: Record<Locale, Record<string, string>> = {
     'help.pressClose': '任意のキーで閉じる',
 
     'footer.select': '選択',
+    'footer.detail': '詳細',
     'footer.install': 'インストール',
     'footer.usage': '使用量',
     'footer.help': 'ヘルプ',
@@ -278,13 +318,29 @@ const messages: Record<Locale, Record<string, string>> = {
     'footer.continue': '続行',
     'footer.backToList': 'プロファイル一覧へ',
 
+    'detail.title': 'プロファイル詳細',
+    'detail.runtime': 'ランタイム:',
+    'detail.installType': 'インストール:',
+    'detail.repo': 'リポジトリ:',
+    'detail.tags': 'タグ:',
+    'detail.focus': 'フォーカス:',
+    'detail.links': 'リンク:',
+    'detail.noLinks': 'リンクが定義されていません。',
+
     'init.detected': '検出されたClaude Code設定:',
     'init.detecting': '設定を検出中...',
     'init.snapshotting': 'バニラスナップショット作成中...',
     'init.done': 'バニラスナップショットを~/.orchester/vanilla/に保存しました。',
 
+    'toolSelect.title': 'ターゲットツール選択',
+    'toolSelect.default': 'デフォルト',
+    'toolSelect.notInstalled': '(未インストール)',
+    'toolSelect.hint': '切替',
+    'toolSelect.minOne': '少なくとも1つのツールを選択してください。',
+
     'diff.remove': '削除:',
     'diff.apply': '適用:',
+    'diff.targets': 'ターゲット:',
     'diff.noChanges': '適用する変更がありません。',
 
     'result.success': '切替成功',
@@ -364,6 +420,7 @@ const messages: Record<Locale, Record<string, string>> = {
     'help.keySelect': '选择 / 确认',
     'help.keyNavigate': '列表导航',
     'help.keyInstall': '从注册表安装',
+    'help.keyDetail': '配置文件详情',
     'help.keyHelp': '切换帮助',
     'help.keyUsage': '查看使用量',
     'help.keyLang': '更改语言',
@@ -371,6 +428,7 @@ const messages: Record<Locale, Record<string, string>> = {
     'help.pressClose': '按任意键关闭',
 
     'footer.select': '选择',
+    'footer.detail': '详情',
     'footer.install': '安装',
     'footer.usage': '使用量',
     'footer.help': '帮助',
@@ -381,13 +439,29 @@ const messages: Record<Locale, Record<string, string>> = {
     'footer.continue': '继续',
     'footer.backToList': '返回配置文件列表',
 
+    'detail.title': '配置文件详情',
+    'detail.runtime': '运行时:',
+    'detail.installType': '安装:',
+    'detail.repo': '仓库:',
+    'detail.tags': '标签:',
+    'detail.focus': '专注:',
+    'detail.links': '链接:',
+    'detail.noLinks': '没有定义链接。',
+
     'init.detected': '检测到的 Claude Code 配置:',
     'init.detecting': '检测配置中...',
     'init.snapshotting': '创建原始快照中...',
     'init.done': '原始快照已保存至 ~/.orchester/vanilla/',
 
+    'toolSelect.title': '选择目标工具',
+    'toolSelect.default': '默认',
+    'toolSelect.notInstalled': '(未安装)',
+    'toolSelect.hint': '切换',
+    'toolSelect.minOne': '请至少选择一个工具。',
+
     'diff.remove': '删除:',
     'diff.apply': '应用:',
+    'diff.targets': '目标:',
     'diff.noChanges': '没有需要应用的更改。',
 
     'result.success': '切换成功',

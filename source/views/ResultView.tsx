@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text, useInput } from 'ink';
 import { Alert, StatusMessage } from '@inkjs/ui';
-import { theme } from '../core/theme.js';
+import { theme, runtimeIcon } from '../core/theme.js';
 import { Header } from './Header.js';
 import { t } from '../core/i18n.js';
 import type { SwitchResult } from '../types.js';
@@ -38,6 +38,9 @@ export function ResultView({ result, profileName, onDone }: ResultViewProps) {
               <Text>{t('result.active')} <Text bold color={theme.success}>{profileName ?? 'vanilla (none)'}</Text></Text>
               <Text dimColor>{t('result.linksCreated')} {result.linksCreated}</Text>
               <Text dimColor>{t('result.linksRemoved')} {result.linksRemoved}</Text>
+              {result.targetTools && result.targetTools.length > 0 && (
+                <Text dimColor>{t('diff.targets')} {result.targetTools.map(tid => `${runtimeIcon(tid)} ${tid}`).join(', ')}</Text>
+              )}
             </Box>
             {result.createdLinks && result.createdLinks.filter(l => l.installType !== 'plugin').length > 0 && (
               <Box flexDirection="column" marginTop={1} paddingLeft={2}>
@@ -70,7 +73,7 @@ export function ResultView({ result, profileName, onDone }: ResultViewProps) {
                 paddingY={0}
                 marginTop={1}
               >
-                <Text bold color={theme.info}>{'🔌 Plugin Commands (run in Claude Code)'}</Text>
+                <Text bold color={theme.info}>{'🔌 Plugin Commands (run in '}{result.targetTools ? result.targetTools.map(t => `${runtimeIcon(t)} ${t}`).join(', ') : 'Claude Code'}{')'}</Text>
                 {result.pluginCommands.filter(c => c.action === 'install').map((cmd, i) => (
                   <Box key={`pi-${i}`} flexDirection="column" paddingLeft={2}>
                     <Text color={theme.success}>{'+ '}{cmd.label}</Text>

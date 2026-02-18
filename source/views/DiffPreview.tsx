@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text, useInput } from 'ink';
 import { Badge, StatusMessage } from '@inkjs/ui';
-import { theme } from '../core/theme.js';
+import { theme, runtimeIcon } from '../core/theme.js';
 import { Header } from './Header.js';
 import { t } from '../core/i18n.js';
 import type { DiffData } from '../types.js';
@@ -39,6 +39,18 @@ export function DiffPreview({ diffData, onConfirm, onCancel }: DiffPreviewProps)
         <Text bold color={theme.warning}> → </Text>
         <Badge color="green">{diffData.to ?? 'vanilla'}</Badge>
       </Box>
+
+      {diffData.targetTools && diffData.targetTools.length > 0 && (
+        <Box paddingX={1} marginTop={0}>
+          <Text dimColor>{t('diff.targets')} </Text>
+          {diffData.targetTools.map((toolId, i) => (
+            <Text key={toolId}>
+              {i > 0 ? ', ' : ''}
+              <Text color={theme.info}>{runtimeIcon(toolId)} {toolId}</Text>
+            </Text>
+          ))}
+        </Box>
+      )}
 
       <Box
         borderStyle="single"

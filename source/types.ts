@@ -1,5 +1,8 @@
 // agent orchester v0.2 — Type definitions
 
+/** Supported tool identifiers */
+export type ToolId = 'claude' | 'codex' | 'gemini' | 'cursor' | 'antigravity' | 'opencode';
+
 /** Install type for links and profiles */
 export type InstallType = 'symlink' | 'plugin' | 'hybrid';
 
@@ -14,6 +17,7 @@ export interface PluginCommand {
 export interface State {
   activeProfile: string | null;
   lastSwitched: string | null;
+  activeTools?: ToolId[];
 }
 
 /** A single symlink managed by orchester */
@@ -46,6 +50,7 @@ export interface DiffItem {
   type: 'add' | 'remove';
   source: string;
   target: string;
+  toolId?: ToolId;
   installType?: 'symlink' | 'plugin';
   pluginCommand?: string;
   pluginLabel?: string;
@@ -56,15 +61,18 @@ export interface DiffData {
   from: string | null;
   to: string | null;
   items: DiffItem[];
+  targetTools?: ToolId[];
 }
 
 /** Profile list item for TUI */
 export interface ProfileListItem {
   name: string;
+  displayName?: string;
   description: string;
   tags: string[];
   focus?: string[];
   active: boolean;
+  tool?: string;
   installType?: InstallType;
 }
 
@@ -76,12 +84,14 @@ export interface SwitchResult {
   createdLinks?: LinkDef[];
   removedLinks?: LinkDef[];
   pluginCommands?: PluginCommand[];
+  targetTools?: ToolId[];
   error?: string;
 }
 
 /** Registry entry for a known orchestration tool */
 export interface RegistryEntry {
   name: string;
+  displayName?: string;
   description: string;
   repo: string;
   tags: string[];
@@ -104,4 +114,4 @@ export interface InstallProgress {
 }
 
 /** App view states */
-export type AppView = 'splash' | 'init' | 'list' | 'preview' | 'result' | 'install' | 'usage';
+export type AppView = 'splash' | 'init' | 'list' | 'toolSelect' | 'preview' | 'result' | 'install' | 'usage';

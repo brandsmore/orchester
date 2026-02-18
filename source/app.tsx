@@ -11,6 +11,7 @@ import { DiffPreview } from './views/DiffPreview.js';
 import { ResultView } from './views/ResultView.js';
 import { InstallView } from './views/InstallView.js';
 import { UsageView } from './views/UsageView.js';
+import { ToolSelectView } from './views/ToolSelectView.js';
 
 export function App() {
   const {
@@ -21,6 +22,7 @@ export function App() {
     switchResult,
     loading,
     selectProfile,
+    confirmToolSelection,
     confirmSwitch,
     backToList,
     finishInit,
@@ -62,6 +64,20 @@ export function App() {
 
     case 'install':
       return <InstallView onDone={backToList} />;
+
+    case 'toolSelect':
+      if (!selectedProfile) return null;
+      {
+        const profile = profiles.find(p => p.name === selectedProfile);
+        return (
+          <ToolSelectView
+            profileName={selectedProfile}
+            defaultTool={profile?.tool ?? 'claude-code'}
+            onConfirm={confirmToolSelection}
+            onCancel={backToList}
+          />
+        );
+      }
 
     case 'preview':
       if (!diffData) return null;

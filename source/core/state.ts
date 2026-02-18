@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'node:path';
 import os from 'node:os';
-import type { State } from '../types.js';
+import type { State, ToolId } from '../types.js';
 
 const ORCH_DIR = path.join(os.homedir(), '.orchester');
 const LEGACY_DIR = path.join(os.homedir(), '.orch');
@@ -20,12 +20,15 @@ migrateIfNeeded();
 const DEFAULT_STATE: State = {
   activeProfile: null,
   lastSwitched: null,
+  activeTools: [],
 };
 
 export function loadState(): State {
   try {
     if (fs.existsSync(STATE_PATH)) {
-      return fs.readJsonSync(STATE_PATH) as State;
+      const state = fs.readJsonSync(STATE_PATH) as State;
+      if (!state.activeTools) state.activeTools = [];
+      return state;
     }
   } catch {
     // corrupted state, return default
@@ -42,10 +45,11 @@ export function getActiveProfile(): string | null {
   return loadState().activeProfile;
 }
 
-export function setActiveProfile(name: string | null): void {
+export function setActiveProfile(name: string | null, tools?: ToolId[]): void {
   const state = loadState();
   state.activeProfile = name;
   state.lastSwitched = new Date().toISOString();
+  state.activeTools = tools ?? [];
   saveState(state);
 }
 

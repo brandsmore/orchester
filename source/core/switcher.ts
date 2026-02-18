@@ -1,10 +1,11 @@
 import path from 'node:path';
 import os from 'node:os';
 import { parseManifest } from './manifest.js';
-import { getActiveProfile, setActiveProfile, getProfilesDir } from './state.js';
+import { loadState, setActiveProfile, getProfilesDir } from './state.js';
 import { restoreVanilla } from './vanilla.js';
 import { createSymlink, removeSymlink, isOrchSymlink } from './linker.js';
-import type { DiffData, DiffItem, SwitchResult, Manifest, LinkDef, PluginCommand } from '../types.js';
+import { TOOL_CONFIG_DIRS, normalizeToolId } from './detector.js';
+import type { DiffData, DiffItem, SwitchResult, Manifest, LinkDef, PluginCommand, ToolId } from '../types.js';
 
 /** Expand $HOME and $PROJECT variables in paths */
 function expandVars(p: string): string {
@@ -24,58 +25,107 @@ function resolveSource(profileName: string, source: string): string {
   return path.join(profileDir, source);
 }
 
-/** Build diff preview between two profiles */
-export function buildDiffPreview(from: string | null, to: string | null): DiffData {
-  const items: DiffItem[] = [];
+/** Resolve a manifest target path to a specific tool's config directory */
+function resolveTargetForTool(manifestTarget: string, toolId: ToolId): string {
+  const toolDirs = TOOL_CONFIG_DIRS[toolId];
+  if (!toolDirs) return manifestTarget;
 
-  // Items to remove (from current profile)
+  // Extract the directory name from target (e.g. '$HOME/.claude/agents/' → 'agents')
+  const parts = manifestTarget.replace(/\/$/, '').split('/');
+  const dirName = parts[parts.length - 1]!;
+
+  if (toolDirs[dirName]) {
+    return toolDirs[dirName];
+  }
+
+  // Fallback: return original target
+  return manifestTarget;
+}
+
+/** Build diff preview between two profiles */
+export function buildDiffPreview(from: string | null, to: string | null, targetTools?: ToolId[]): DiffData {
+  const items: DiffItem[] = [];
+  const tools = targetTools ?? ['claude'];
+  const state = loadState();
+  const previousTools: ToolId[] = state.activeTools && state.activeTools.length > 0 ? state.activeTools : ['claude'];
+
+  // Items to remove (from current profile) — use previousTools for correct paths
   if (from) {
     try {
       const fromManifest = loadProfileManifest(from);
       for (const link of fromManifest.links) {
-        items.push({
-          type: 'remove',
-          source: link.source,
-          target: link.target,
-          installType: link.installType,
-          pluginCommand: link.pluginCommand,
-          pluginLabel: link.pluginLabel,
-        });
+        if (link.installType === 'plugin') {
+          items.push({
+            type: 'remove',
+            source: link.source,
+            target: link.target,
+            installType: link.installType,
+            pluginCommand: link.pluginCommand,
+            pluginLabel: link.pluginLabel,
+          });
+          continue;
+        }
+        for (const prevTool of previousTools) {
+          const resolvedTarget = resolveTargetForTool(link.target, prevTool);
+          items.push({
+            type: 'remove',
+            source: link.source,
+            target: resolvedTarget,
+            toolId: prevTool,
+            installType: link.installType,
+          });
+        }
       }
     } catch {
       // profile may not exist anymore
     }
   }
 
-  // Items to add (to target profile)
+  // Items to add (to target profile) — use targetTools for new paths
   if (to) {
     try {
       const toManifest = loadProfileManifest(to);
       for (const link of toManifest.links) {
-        items.push({
-          type: 'add',
-          source: link.source,
-          target: link.target,
-          installType: link.installType,
-          pluginCommand: link.pluginCommand,
-          pluginLabel: link.pluginLabel,
-        });
+        if (link.installType === 'plugin') {
+          items.push({
+            type: 'add',
+            source: link.source,
+            target: link.target,
+            installType: link.installType,
+            pluginCommand: link.pluginCommand,
+            pluginLabel: link.pluginLabel,
+          });
+          continue;
+        }
+        for (const tool of tools) {
+          const resolvedTarget = resolveTargetForTool(link.target, tool);
+          items.push({
+            type: 'add',
+            source: link.source,
+            target: resolvedTarget,
+            toolId: tool,
+            installType: link.installType,
+          });
+        }
       }
     } catch {
       // profile may not exist
     }
   }
 
-  return { from, to, items };
+  return { from, to, items, targetTools: tools };
 }
 
 /** 4-phase profile switch: Validate → Deactivate → Activate → Verify */
-export function switchProfile(from: string | null, to: string | null): SwitchResult {
+export function switchProfile(from: string | null, to: string | null, targetTools?: ToolId[]): SwitchResult {
   let linksRemoved = 0;
   let linksCreated = 0;
   const createdLinks: LinkDef[] = [];
   const removedLinks: LinkDef[] = [];
   const pluginCommands: PluginCommand[] = [];
+  const tools = targetTools ?? ['claude'];
+  const state = loadState();
+  const previousTools: ToolId[] = state.activeTools && state.activeTools.length > 0 ? state.activeTools : ['claude'];
 
   try {
     // Phase 1: Validate
@@ -83,13 +133,12 @@ export function switchProfile(from: string | null, to: string | null): SwitchRes
       loadProfileManifest(to); // throws if invalid
     }
 
-    // Phase 2: Deactivate current
+    // Phase 2: Deactivate current — use previousTools for correct paths
     if (from) {
       try {
         const fromManifest = loadProfileManifest(from);
         for (const link of fromManifest.links) {
           if (link.installType === 'plugin') {
-            // Plugin links: collect uninstall command, skip symlink removal
             if (link.pluginCommand) {
               pluginCommands.push({
                 command: link.pluginCommand.replace(/install/i, 'uninstall'),
@@ -100,11 +149,14 @@ export function switchProfile(from: string | null, to: string | null): SwitchRes
             removedLinks.push({ source: link.source, target: link.target, installType: 'plugin', pluginCommand: link.pluginCommand, pluginLabel: link.pluginLabel });
             continue;
           }
-          const target = expandVars(link.target);
-          if (isOrchSymlink(target)) {
-            removeSymlink(target);
-            linksRemoved++;
-            removedLinks.push({ source: link.source, target: link.target });
+          for (const prevTool of previousTools) {
+            const resolvedTarget = resolveTargetForTool(link.target, prevTool);
+            const target = expandVars(resolvedTarget);
+            if (isOrchSymlink(target)) {
+              removeSymlink(target);
+              linksRemoved++;
+              removedLinks.push({ source: link.source, target: resolvedTarget });
+            }
           }
         }
       } catch {
@@ -117,7 +169,6 @@ export function switchProfile(from: string | null, to: string | null): SwitchRes
       const toManifest = loadProfileManifest(to);
       for (const link of toManifest.links) {
         if (link.installType === 'plugin') {
-          // Plugin links: collect install command, skip symlink creation
           if (link.pluginCommand) {
             pluginCommands.push({
               command: link.pluginCommand,
@@ -128,13 +179,16 @@ export function switchProfile(from: string | null, to: string | null): SwitchRes
           createdLinks.push({ source: link.source, target: link.target, installType: 'plugin', pluginCommand: link.pluginCommand, pluginLabel: link.pluginLabel });
           continue;
         }
-        const absoluteSource = resolveSource(to, link.source);
-        const target = expandVars(link.target);
-        createSymlink(absoluteSource, target);
-        linksCreated++;
-        createdLinks.push({ source: link.source, target: link.target });
+        for (const tool of tools) {
+          const resolvedTarget = resolveTargetForTool(link.target, tool);
+          const absoluteSource = resolveSource(to, link.source);
+          const target = expandVars(resolvedTarget);
+          createSymlink(absoluteSource, target);
+          linksCreated++;
+          createdLinks.push({ source: link.source, target: resolvedTarget });
+        }
       }
-      setActiveProfile(to);
+      setActiveProfile(to, tools);
     } else {
       // "none" selected — restore vanilla
       restoreVanilla();
@@ -148,6 +202,7 @@ export function switchProfile(from: string | null, to: string | null): SwitchRes
       linksRemoved,
       createdLinks,
       removedLinks,
+      targetTools: tools,
       ...(pluginCommands.length > 0 ? { pluginCommands } : {}),
     };
   } catch (err) {

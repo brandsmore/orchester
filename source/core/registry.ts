@@ -4,6 +4,7 @@ import os from 'node:os';
 import { execSync } from 'node:child_process';
 import yaml from 'js-yaml';
 import { getProfilesDir, getOrchDir } from './state.js';
+import { TOOL_CONFIG_DIRS, normalizeToolId } from './detector.js';
 import type { RegistryEntry } from '../types.js';
 
 /**
@@ -13,6 +14,7 @@ import type { RegistryEntry } from '../types.js';
 export const REGISTRY: RegistryEntry[] = [
   {
     name: 'omc',
+    displayName: 'Oh My ClaudeCode',
     description: '28 agents, 37 skills, Team mode, multi-agent orchestration',
     repo: 'https://github.com/Yeachan-Heo/oh-my-claudecode',
     tags: ['agents', 'orchestration', 'multi-mode'],
@@ -33,6 +35,7 @@ export const REGISTRY: RegistryEntry[] = [
   },
   {
     name: 'ecc',
+    displayName: 'Everything Claude Code',
     description: '13 agents, 30+ skills, hooks + commands, hackathon winner',
     repo: 'https://github.com/affaan-m/everything-claude-code',
     tags: ['starter-kit', 'comprehensive', 'production-ready'],
@@ -53,6 +56,7 @@ export const REGISTRY: RegistryEntry[] = [
   },
   {
     name: 'bkit',
+    displayName: 'bkit Claude Code',
     description: 'PDCA-based AI native development workflow',
     repo: 'https://github.com/popup-studio-ai/bkit-claude-code',
     tags: ['pdca', 'workflow', 'development'],
@@ -73,6 +77,7 @@ export const REGISTRY: RegistryEntry[] = [
   },
   {
     name: 'wshobson-agents',
+    displayName: 'Wshobson Agents',
     description: '73 plugins, 112 agents, 146 skills, plugin marketplace',
     repo: 'https://github.com/wshobson/agents',
     tags: ['plugins', 'marketplace', 'agents'],
@@ -92,6 +97,7 @@ export const REGISTRY: RegistryEntry[] = [
   },
   {
     name: 'oh-my-opencode',
+    displayName: 'Oh My OpenCode',
     description: 'Sisyphus orchestrator, multi-agent workflows for OpenCode',
     repo: 'https://github.com/code-yeongyu/oh-my-opencode',
     tags: ['opencode', 'orchestration', 'multi-agent'],
@@ -111,7 +117,29 @@ export const REGISTRY: RegistryEntry[] = [
     },
   },
   {
+    name: 'oh-my-codex',
+    displayName: 'Oh My Codex',
+    description: 'Agent roles, workflow skills, MCP state management for Codex CLI',
+    repo: 'https://github.com/ohmycodex/oh-my-codex',
+    tags: ['codex', 'orchestration', 'agents', 'prompts'],
+    focus: ['Codex CLI', 'Architect', 'Executor', 'Planner'],
+    stars: '-',
+    profileDir: 'oh-my-codex',
+    manifest: {
+      name: 'oh-my-codex',
+      description: 'Agent roles, workflow skills, MCP state management for Codex CLI',
+      tags: ['codex', 'orchestration', 'agents', 'prompts'],
+      tool: 'codex',
+      links: [
+        { source: 'files/agents/', target: '$HOME/.codex/agents/' },
+        { source: 'files/prompts/', target: '$HOME/.codex/prompts/' },
+        { source: 'files/hooks/', target: '$HOME/.codex/hooks/' },
+      ],
+    },
+  },
+  {
     name: 'claude-orchestra',
+    displayName: 'Claude Code Agents Orchestra',
     description: '47 agents, 10 teams, organizational chart structure',
     repo: 'https://github.com/0ldh/claude-code-agents-orchestra',
     tags: ['agents', 'org-chart', 'structure'],
@@ -130,6 +158,7 @@ export const REGISTRY: RegistryEntry[] = [
   },
   {
     name: 'superpowers',
+    displayName: 'Superpowers',
     description: 'Agentic skills framework, TDD workflow, multi-tool support',
     repo: 'https://github.com/obra/superpowers',
     tags: ['skills', 'tdd', 'workflow', 'multi-tool'],
@@ -269,15 +298,8 @@ export async function installProfile(
 
       if (fs.statSync(src).isDirectory()) {
         fs.copySync(src, dest);
-        // Map to default Claude Code targets
-        const targetMap: Record<string, string> = {
-          agents: '$HOME/.claude/agents/',
-          skills: '$HOME/.claude/skills/',
-          hooks: '$HOME/.claude/hooks/',
-          plugins: '$HOME/.claude/plugins/',
-          commands: '$HOME/.claude/commands/',
-          prompts: '$HOME/.claude/prompts/',
-        };
+        const toolId = normalizeToolId(entry.manifest.tool);
+        const targetMap = TOOL_CONFIG_DIRS[toolId] ?? TOOL_CONFIG_DIRS['claude']!;
         if (targetMap[item]) {
           links.push({ source: `files/${item}/`, target: targetMap[item] });
         }
@@ -426,14 +448,7 @@ export async function installFromUrl(
 
       if (fs.statSync(src).isDirectory()) {
         fs.copySync(src, dest);
-        const targetMap: Record<string, string> = {
-          agents: '$HOME/.claude/agents/',
-          skills: '$HOME/.claude/skills/',
-          hooks: '$HOME/.claude/hooks/',
-          plugins: '$HOME/.claude/plugins/',
-          commands: '$HOME/.claude/commands/',
-          prompts: '$HOME/.claude/prompts/',
-        };
+        const targetMap = TOOL_CONFIG_DIRS['claude']!;
         if (targetMap[item]) {
           links.push({ source: `files/${item}/`, target: targetMap[item] });
         }

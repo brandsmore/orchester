@@ -4,7 +4,7 @@ import { parseManifest, listProfileDirs } from '../core/manifest.js';
 import { hasVanilla } from '../core/vanilla.js';
 import { buildDiffPreview, switchProfile } from '../core/switcher.js';
 import { getRegistryWithStatus } from '../core/registry.js';
-import type { AppView, ProfileListItem, DiffData, SwitchResult, InstallType } from '../types.js';
+import type { AppView, ProfileListItem, DiffData, SwitchResult, InstallType, ToolId } from '../types.js';
 
 /** Infer install type from manifest links */
 function inferInstallType(manifest: { links: Array<{ installType?: string }> }): InstallType {
@@ -20,6 +20,7 @@ export function useOrch() {
   const [profiles, setProfiles] = useState<ProfileListItem[]>([]);
   const [activeProfile, setActiveProfile] = useState<string | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<string | null>(null);
+  const [selectedTools, setSelectedTools] = useState<ToolId[]>([]);
   const [diffData, setDiffData] = useState<DiffData | null>(null);
   const [switchResult, setSwitchResult] = useState<SwitchResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,10 +41,12 @@ export function useOrch() {
         const installType = manifest.installType ?? registryEntry?.installType ?? inferInstallType(manifest);
         const item: ProfileListItem = {
           name: manifest.name,
+          displayName: registryEntry?.displayName,
           description: manifest.description,
           tags: manifest.tags,
           focus: registryEntry?.focus,
           active: manifest.name === state.activeProfile,
+          tool: manifest.tool,
           ...(installType !== 'symlink' ? { installType } : {}),
         };
         return item;
@@ -62,16 +65,28 @@ export function useOrch() {
 
   const selectProfile = useCallback((name: string | null) => {
     setSelectedProfile(name);
-    const diff = buildDiffPreview(activeProfile, name);
-    setDiffData(diff);
-    setView('preview');
+    if (name === null) {
+      // "none" — skip tool selection, go straight to preview
+      const diff = buildDiffPreview(activeProfile, null);
+      setDiffData(diff);
+      setView('preview');
+    } else {
+      setView('toolSelect');
+    }
   }, [activeProfile]);
 
+  const confirmToolSelection = useCallback((tools: ToolId[]) => {
+    setSelectedTools(tools);
+    const diff = buildDiffPreview(activeProfile, selectedProfile, tools);
+    setDiffData(diff);
+    setView('preview');
+  }, [activeProfile, selectedProfile]);
+
   const confirmSwitch = useCallback(() => {
-    const result = switchProfile(activeProfile, selectedProfile);
+    const result = switchProfile(activeProfile, selectedProfile, selectedTools.length > 0 ? selectedTools : undefined);
     setSwitchResult(result);
     setView('result');
-  }, [activeProfile, selectedProfile]);
+  }, [activeProfile, selectedProfile, selectedTools]);
 
   const backToList = useCallback(() => {
     loadProfiles();
@@ -79,6 +94,7 @@ export function useOrch() {
     setDiffData(null);
     setSwitchResult(null);
     setSelectedProfile(null);
+    setSelectedTools([]);
   }, [loadProfiles]);
 
   const finishInit = useCallback(() => {
@@ -109,10 +125,12 @@ export function useOrch() {
     profiles,
     activeProfile,
     selectedProfile,
+    selectedTools,
     diffData,
     switchResult,
     loading,
     selectProfile,
+    confirmToolSelection,
     confirmSwitch,
     backToList,
     finishInit,

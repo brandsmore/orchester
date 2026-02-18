@@ -2,6 +2,33 @@ import fs from 'fs-extra';
 import path from 'node:path';
 import os from 'node:os';
 import { execSync } from 'node:child_process';
+import type { ToolId } from '../types.js';
+
+/** Tool-specific config directory mappings */
+export const TOOL_CONFIG_DIRS: Record<string, Record<string, string>> = {
+  claude: { agents: '$HOME/.claude/agents/', skills: '$HOME/.claude/skills/', hooks: '$HOME/.claude/hooks/', plugins: '$HOME/.claude/plugins/', commands: '$HOME/.claude/commands/', prompts: '$HOME/.claude/prompts/' },
+  codex: { agents: '$HOME/.codex/agents/', skills: '$HOME/.codex/skills/', hooks: '$HOME/.codex/hooks/', commands: '$HOME/.codex/commands/', prompts: '$HOME/.codex/prompts/' },
+  gemini: { agents: '$HOME/.gemini/agents/', skills: '$HOME/.gemini/skills/', hooks: '$HOME/.gemini/hooks/', commands: '$HOME/.gemini/commands/' },
+  cursor: { skills: '$HOME/.cursor/skills/', rules: '$HOME/.cursor/rules/', docs: '$HOME/.cursor/docs/' },
+  antigravity: { agents: '$HOME/.antigravity/agents/', skills: '$HOME/.gemini/antigravity/skills/', extensions: '$HOME/.antigravity/extensions/' },
+  opencode: { agents: '$HOME/.config/opencode/agents/', skills: '$HOME/.config/opencode/skills/', hooks: '$HOME/.config/opencode/hooks/', commands: '$HOME/.config/opencode/commands/' },
+};
+
+/** Normalize tool name to ToolId (e.g. 'claude-code' → 'claude') */
+export function normalizeToolId(tool: string): ToolId {
+  const map: Record<string, ToolId> = {
+    'claude-code': 'claude',
+    'claude': 'claude',
+    'codex-cli': 'codex',
+    'codex': 'codex',
+    'gemini-cli': 'gemini',
+    'gemini': 'gemini',
+    'cursor': 'cursor',
+    'antigravity': 'antigravity',
+    'opencode': 'opencode',
+  };
+  return map[tool.toLowerCase()] ?? 'claude';
+}
 
 export interface DetectedRuntime {
   id: string;
@@ -14,7 +41,8 @@ export interface DetectedRuntime {
 export interface DetectedTool {
   name: string;
   location: string;
-  type: 'agents' | 'skills' | 'plugins' | 'hooks' | 'commands';
+  type: string;
+  toolId: string;
   fileCount: number;
 }
 
@@ -104,37 +132,30 @@ function countFiles(dir: string): number {
   }
 }
 
-/** Scan known config directories for existing orchestration tools */
+/** Expand $HOME in TOOL_CONFIG_DIRS paths */
+function expandHome(p: string): string {
+  return p.replace(/\$HOME/g, os.homedir());
+}
+
+/** Scan all tool config directories from TOOL_CONFIG_DIRS */
 export function detectExistingTools(): DetectedTool[] {
-  const home = os.homedir();
   const tools: DetectedTool[] = [];
 
-  const scanPaths: Array<{ dir: string; type: DetectedTool['type'] }> = [
-    // Claude Code
-    { dir: path.join(home, '.claude', 'agents'), type: 'agents' },
-    { dir: path.join(home, '.claude', 'skills'), type: 'skills' },
-    { dir: path.join(home, '.claude', 'plugins'), type: 'plugins' },
-    { dir: path.join(home, '.claude', 'hooks'), type: 'hooks' },
-    { dir: path.join(home, '.claude', 'commands'), type: 'commands' },
-    // OpenCode
-    { dir: path.join(home, '.config', 'opencode', 'agents'), type: 'agents' },
-    { dir: path.join(home, '.config', 'opencode', 'skills'), type: 'skills' },
-    { dir: path.join(home, '.config', 'opencode', 'plugins'), type: 'plugins' },
-    { dir: path.join(home, '.config', 'opencode', 'hooks'), type: 'hooks' },
-    { dir: path.join(home, '.config', 'opencode', 'commands'), type: 'commands' },
-  ];
+  for (const [toolId, dirs] of Object.entries(TOOL_CONFIG_DIRS)) {
+    for (const [type, rawDir] of Object.entries(dirs)) {
+      const dir = expandHome(rawDir).replace(/\/$/, '');
+      if (!fs.existsSync(dir)) continue;
 
-  for (const { dir, type } of scanPaths) {
-    if (!fs.existsSync(dir)) continue;
-
-    const entries = fs.readdirSync(dir).filter(f => !f.startsWith('.'));
-    if (entries.length > 0) {
-      tools.push({
-        name: type,
-        location: dir,
-        type,
-        fileCount: entries.length,
-      });
+      const entries = fs.readdirSync(dir).filter(f => !f.startsWith('.'));
+      if (entries.length > 0) {
+        tools.push({
+          name: type,
+          location: dir,
+          type,
+          toolId,
+          fileCount: entries.length,
+        });
+      }
     }
   }
 
@@ -242,6 +263,35 @@ export function detectActiveOrchestration(): Array<{ name: string; evidence: str
   }
   if (eccEvidence.length > 0) {
     results.push({ name: 'ecc', evidence: eccEvidence });
+  }
+
+  // ── oh-my-codex (omx) detection ──
+  const omxEvidence: string[] = [];
+  const codexDir = path.join(home, '.codex');
+  const omxDir = path.join(codexDir, '.omx');
+  if (fs.existsSync(omxDir)) {
+    omxEvidence.push(`~/.codex/.omx/ directory`);
+  }
+  const omxBin = whichSync('oh-my-codex');
+  if (omxBin) {
+    omxEvidence.push(`binary: ${omxBin}`);
+  }
+  // Check config.toml for omx markers
+  const codexConfig = path.join(codexDir, 'config.toml');
+  try {
+    if (fs.existsSync(codexConfig)) {
+      const configContent = fs.readFileSync(codexConfig, 'utf-8');
+      if (configContent.includes('oh-my-codex') || configContent.includes('omx_state')) {
+        omxEvidence.push(`config.toml contains omx config`);
+      }
+    }
+  } catch { /* ignore */ }
+  const codexPromptsDir = path.join(codexDir, 'prompts');
+  if (fs.existsSync(codexPromptsDir) && countFiles(codexPromptsDir) >= 5) {
+    omxEvidence.push(`~/.codex/prompts/ (${countFiles(codexPromptsDir)} prompts)`);
+  }
+  if (omxEvidence.length > 0) {
+    results.push({ name: 'oh-my-codex', evidence: omxEvidence });
   }
 
   // ── oh-my-opencode detection ──
